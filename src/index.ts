@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from 'express'
 import morgan from 'morgan'
 import * as dotenv from 'dotenv'
+import db from './database'
 
 dotenv.config()
 
@@ -16,10 +17,21 @@ app.get('/', (req: Request, res: Response) => {
     message: 'Hello World 🌍'
   })
 })
+//test db
+db.connect().then((client) => {
+  return client
+    .query('SELECT NOW()')
+    .then((res) => {
+      client.release()
+      console.log(res.rows)
+    })
+    .catch((err) => {
+      client.release()
+      console.log(err.stack)
+    })
+})
 
 // start express server
 app.listen(PORT, () => {
   console.log(`Server is starting at prot:${PORT}`)
 })
-
-export default app
